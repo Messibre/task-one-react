@@ -1,0 +1,20 @@
+# Runs the automated tests on every push and pull request.
+# Keep this workflow tests-only: its pass/fail result is what tells a reviewer
+# whether the code works. Style and build checks live in checks.yml.
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm test
