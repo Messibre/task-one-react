@@ -1,7 +1,12 @@
-import * as React from "react";
+import React from 'react';
 
+type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'danger';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
 
 export interface ButtonProps
@@ -13,10 +18,7 @@ export interface ButtonProps
 }
 
 const baseStyles =
-  'inline-flex items-center justify-center gap-2 rounded-md font-medium ' +
-  'transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ' +
-  'disabled:pointer-events-none disabled:opacity-50 ' +
-  'disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
@@ -26,11 +28,10 @@ const variantStyles: Record<ButtonVariant, string> = {
     'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
 
   outline:
-    'border border-gray-300 bg-transparent text-gray-700 ' +
-    'hover:bg-gray-50 focus:ring-blue-500',
+    'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-blue-500',
 
   ghost:
-    'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
+    'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
 
   danger:
     'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
@@ -73,46 +74,40 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       .filter(Boolean)
       .join(' ');
 
-    /*
-     * asChild is intended for cases such as:
-     *
-     * <Button asChild>
-     *   <Link href="/login">Login</Link>
-     * </Button>
-     *
-     * We clone the child so it receives the Button styles/props.
-     */
-    if (asChild) {
-      const child = React.Children.only(children);
-
-      if (!React.isValidElement(child)) {
-        throw new Error(
-          'Button with asChild requires a single valid React element as its child.'
-        );
-      }
-
-      return React.cloneElement(child, {
-        ...props,
-        ref,
-        className: [classes, child.props.className]
-          .filter(Boolean)
-          .join(' '),
-        'aria-disabled': disabled || loading ? true : undefined,
-      });
+    // Normal button
+    if (!asChild) {
+      return (
+        <button
+          ref={ref}
+          className={classes}
+          disabled={disabled || loading}
+          aria-busy={loading || undefined}
+          {...props}
+        >
+          {loading && <Spinner />}
+          {children}
+        </button>
+      );
     }
 
-    return (
-      <button
-        ref={ref}
-        className={classes}
-        disabled={disabled || loading}
-        aria-busy={loading || undefined}
-        {...props}
-      >
-        {loading && <Spinner />}
-        {children}
-      </button>
-    );
+    // asChild requires exactly one React element
+    const child = React.Children.only(
+      children
+    ) as React.ReactElement<{
+      className?: string;
+      disabled?: boolean;
+      'aria-disabled'?: boolean;
+      'aria-busy'?: boolean;
+    }>;
+
+    return React.cloneElement(child, {
+      ...props,
+      className: [classes, child.props.className]
+        .filter(Boolean)
+        .join(' '),
+      'aria-disabled': disabled || loading || undefined,
+      'aria-busy': loading || undefined,
+    });
   }
 );
 
