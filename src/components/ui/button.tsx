@@ -1,13 +1,15 @@
 import React from 'react';
+import { Share2 } from 'lucide-react';
 
-type ButtonVariant =
+export type ButtonVariant =
   | 'primary'
   | 'secondary'
   | 'outline'
   | 'ghost'
-  | 'danger';
+  | 'danger'
+  | 'share';
 
-type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,6 +17,7 @@ export interface ButtonProps
   size?: ButtonSize;
   loading?: boolean;
   asChild?: boolean;
+  icon?: React.ReactNode;
 }
 
 const baseStyles =
@@ -35,6 +38,9 @@ const variantStyles: Record<ButtonVariant, string> = {
 
   danger:
     'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+
+  share:
+    'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -61,6 +67,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       asChild = false,
       className = '',
       disabled,
+      icon,
       ...props
     },
     ref
@@ -76,16 +83,42 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     // Normal button
     if (!asChild) {
+      const iconSize =
+        size === 'sm' ? 'h-3.5 w-3.5' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4';
+
+      const renderIcon = () => {
+        if (loading) return <Spinner />;
+        if (icon) return icon;
+        if (variant === 'share') {
+          return (
+            <Share2
+              className={`${iconSize} shrink-0`}
+              aria-hidden="true"
+              data-testid="share-icon"
+            />
+          );
+        }
+        return null;
+      };
+
+      const buttonContent =
+        children ?? (variant === 'share' && size !== 'icon' ? 'Share' : null);
+
+      const ariaLabel =
+        props['aria-label'] ||
+        (variant === 'share' && !children ? 'Share' : undefined);
+
       return (
         <button
           ref={ref}
           className={classes}
           disabled={disabled || loading}
           aria-busy={loading || undefined}
+          aria-label={ariaLabel}
           {...props}
         >
-          {loading && <Spinner />}
-          {children}
+          {renderIcon()}
+          {buttonContent}
         </button>
       );
     }
@@ -112,3 +145,4 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
+
