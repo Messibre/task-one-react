@@ -5,6 +5,15 @@ import { ErrorPage } from "@/pages/error-page";
 import { HomePage } from "@/pages/home-page";
 import { NotFoundPage } from "@/pages/not-found-page";
 
+export function SettingsPage() {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
+      <p className="text-muted-foreground">Manage your settings and preferences.</p>
+    </div>
+  );
+}
+
 /**
  * All routes live here as plain data so tests can render them in a memory router.
  * To add a page: create it in src/pages, then add one entry to `children`.
@@ -17,6 +26,7 @@ export const routes: RouteObject[] = [
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: "settings", element: <SettingsPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
