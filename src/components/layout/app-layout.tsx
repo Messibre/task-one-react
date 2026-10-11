@@ -2,7 +2,10 @@ import { NavLink, Outlet } from "react-router";
 
 import { cn } from "@/lib/utils";
 
-const links = [{ to: "/", label: "Home", end: true }];
+const links = [
+  { to: "/", label: "Home", end: true },
+  { to: "/settings", label: "Settings" },
+];
 
 export function AppLayout() {
   return (

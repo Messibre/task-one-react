@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { ErrorPage } from "@/pages/error-page";
 import { HomePage } from "@/pages/home-page";
 import { NotFoundPage } from "@/pages/not-found-page";
+import { SettingsPage } from "@/pages/settings-page";
 
 /**
  * All routes live here as plain data so tests can render them in a memory router.
@@ -17,6 +18,7 @@ export const routes: RouteObject[] = [
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: "settings", element: <SettingsPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
